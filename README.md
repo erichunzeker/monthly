@@ -4,6 +4,7 @@
 ## development 
  - react+redux application calling spotify api endpoints
  - workflow: gitflow
+ - <a href="https://gist.github.com/derzorngottes/3b57edc1f996dddcab25">using keys in developement</a>
  
 ## deployement
  - heroku because its free and easy to store and access api keys 
