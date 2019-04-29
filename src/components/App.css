@@ -1,0 +1,23 @@
+.App-header {
+  background-image: linear-gradient(to right, #1db954, #00bd9c, #00bcd8, #00b4f8, #69a6f9);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+#streaming-options {
+  font-size: 50px;
+}
+
+#spotify-link:hover {
+  color: #34495e;
+  transition: 0.8s;
+}
+#apple-music-link:hover {
+  color: #34495e;
+  transition: 0.5s;
+}
