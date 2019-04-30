@@ -13,6 +13,7 @@ body {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+
 }
 
 #streaming-options {
@@ -33,11 +34,27 @@ body {
 
 }
 
-#spotify-link:hover {
+#spotify-link-component:hover {
   color: #34495e;
   transition: 1.0s;
 }
 #apple-music-link:hover {
   color: #34495e;
   transition: 1.0s;
+}
+
+#app-description {
+  width: 100%;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  justify-content: center;
+  padding-left: 5%;
+  padding-right: 5%;
+  position: absolute;
+  bottom: 15%;
+}
+
+#spotify-link-component {
+  text-decoration: none;
+  color: white;
 }
