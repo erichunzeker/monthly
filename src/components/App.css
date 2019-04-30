@@ -1,0 +1,60 @@
+body {
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-image: linear-gradient(to right, #1db954, #00bd9c, #00bcd8, #00b4f8, #69a6f9);
+
+}
+.App-header {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+
+}
+
+#streaming-options {
+  font-size: 8vw;
+  width: 100%;
+}
+
+#spotify-link {
+  width: 50%;
+  align-items: center;
+  justify-content: left;
+}
+#apple-music-link {
+  width: 50%;
+  align-items: center;
+  justify-content: right;
+  white-space: nowrap;
+
+}
+
+#spotify-link-component:hover {
+  color: #34495e;
+  transition: 1.0s;
+}
+#apple-music-link:hover {
+  color: #34495e;
+  transition: 1.0s;
+}
+
+#app-description {
+  width: 100%;
+  font-size: calc(1px + 2vmin);
+  text-align: center;
+  justify-content: center;
+  padding-left: 5%;
+  padding-right: 5%;
+  position: absolute;
+  bottom: 15%;
+}
+
+#spotify-link-component {
+  text-decoration: none;
+  color: white;
+}
