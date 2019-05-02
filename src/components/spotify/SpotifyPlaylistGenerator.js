@@ -9,3 +9,21 @@
 * - for each song, map /v1/playlists/{playlist_id}/tracks - Add Tracks to a Playlist
 * - make playlist cool /v1/playlists/{playlist_id} - Change a Playlist's Details
 */
+
+import React, { Component } from 'react';
+import './App.css';
+import SpotifyLogin from './spotify/SpotifyLogin.js';
+
+
+class SpotifyPlaylistGenerator extends Component{
+
+    render() {
+        return (
+            <header className="App-header">
+                <p>stider dog</p>
+            </header>
+        );
+    }
+}
+
+export default SpotifyPlaylistGenerator

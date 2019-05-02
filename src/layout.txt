@@ -1,0 +1,7 @@
+app.js (no token)
+
+click spotify
+
+login and render app.js with token
+
+return spotify component
