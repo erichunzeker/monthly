@@ -46,3 +46,4 @@ function getHashParams() {
     }
     return hashParams;
 }
+
