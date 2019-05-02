@@ -4,8 +4,10 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SpotifyLogin from './spotify/SpotifyLogin.js';
 import * as SpotifyFunctions from './spotify/SpotifyFunctions';
 import HomePage from './HomePage';
+import {authEndpoint} from "./spotify/SpotifyLogin";
 
 class App extends Component{
+
 
     render() {
         return (

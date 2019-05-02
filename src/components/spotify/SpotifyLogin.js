@@ -25,6 +25,7 @@ const hash = window.location.hash
 window.location.hash = "";
 
 
+
 class SpotifyLogin extends Component{
     constructor() {
         super();
@@ -68,6 +69,7 @@ class SpotifyLogin extends Component{
     }
 
     render() {
+
         return (
             <span>
                 {!this.state.token && (
@@ -76,8 +78,9 @@ class SpotifyLogin extends Component{
                        &response_type=token&show_dialog=true`}>spotify</a>
                 )}
 
-                {this.state.token && (
-                    <p>{this.state.total}</p>
+                {this.state.token &&
+                (
+                    <p>loading</p>
                 )}
             </span>
         );
