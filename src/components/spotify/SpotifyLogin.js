@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import * as SpotifyFunctions from './SpotifyFunctions';
 import * as $ from "jquery";
+import ReactDOM from "react-dom";
+import App from "../../index";
+import SpotifyPlaylistGenerator from './SpotifyPlaylistGenerator';
 
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
 const clientId = process.env.REACT_APP_SPOTIFY_ID;
@@ -27,14 +30,17 @@ window.location.hash = "";
 
 
 class SpotifyLogin extends Component{
+    numPlaylists = 0;
     constructor() {
         super();
         this.state = {
             token: null,
             total: 0,
-            playlists: []
+            playlists: [],
+            username: null,
         };
-        this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
+        this.getPlaylists = this.getPlaylists.bind(this);
+        this.organizePlaylists = SpotifyFunctions.organizeData.bind(this);
     }
 
     componentDidMount() {
@@ -46,14 +52,24 @@ class SpotifyLogin extends Component{
             this.setState({
                 token: _token
             });
-            this.getCurrentlyPlaying(_token);
+
+            var offset = 0;
+            this.getPlaylists(_token, offset);
+
+            offset += 50;
+            console.log(this.numPlaylists);
+            console.log(offset);
+            while(offset < this.state.total) {
+                this.getPlaylists(_token, offset);
+                offset += 50;
+            }
         }
     }
 
-    getCurrentlyPlaying(token) {
+    getPlaylists(token, offset) {
         // Make a call using the token
         $.ajax({
-            url: "https://api.spotify.com/v1/me/playlists",
+            url: "https://api.spotify.com/v1/me/playlists?limit=50&offset=" + offset,
             type: "GET",
             beforeSend: (xhr) => {
                 xhr.setRequestHeader("Authorization", "Bearer " + token);
@@ -62,14 +78,18 @@ class SpotifyLogin extends Component{
                 console.log("data", data);
                 this.setState({
                     total: data.total,
-                    playlists: data.items
+                    playlists: this.state.playlists.concat(data.items),
+                    username: data.href
                 });
+                this.numPlaylists = data.total;
+
+                this.organizePlaylists(data.items, );
             }
         });
     }
 
-    render() {
 
+    render() {
         return (
             <span>
                 {!this.state.token && (
@@ -78,10 +98,9 @@ class SpotifyLogin extends Component{
                        &response_type=token&show_dialog=true`}>spotify</a>
                 )}
 
-                {this.state.token &&
-                (
-                    <p>loading</p>
-                )}
+                {this.state.token && (
+                    <SpotifyPlaylistGenerator/>
+                    )}
             </span>
         );
     }

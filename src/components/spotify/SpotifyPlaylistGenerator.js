@@ -11,11 +11,10 @@
 */
 
 import React, { Component } from 'react';
-import './App.css';
-import SpotifyLogin from './spotify/SpotifyLogin.js';
+import SpotifyLogin from './SpotifyLogin';
 
 
-class SpotifyPlaylistGenerator extends Component{
+class SpotifyPlaylistGenerator extends Component {
 
     render() {
         return (
