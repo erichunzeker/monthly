@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as SpotifyFunctions from './SpotifyFunctions';
 import * as $ from "jquery";
+import SpotifyPlaylistGenerator from './SpotifyPlaylistGenerator';
 
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
 const clientId = process.env.REACT_APP_SPOTIFY_ID;
@@ -25,16 +26,16 @@ const hash = window.location.hash
 window.location.hash = "";
 
 
-
 class SpotifyLogin extends Component{
     constructor() {
         super();
         this.state = {
             token: null,
-            total: 0,
-            playlists: []
+            playlists: [],
+            username: null,
         };
-        this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
+        this.getPlaylists = this.getPlaylists.bind(this);
+        this.organizePlaylists = SpotifyFunctions.organizeData.bind(this);
     }
 
     componentDidMount() {
@@ -46,14 +47,17 @@ class SpotifyLogin extends Component{
             this.setState({
                 token: _token
             });
-            this.getCurrentlyPlaying(_token);
+
+            var offset = 0;
+            this.getPlaylists(_token, offset);
+
         }
     }
 
-    getCurrentlyPlaying(token) {
+    getPlaylists(token, offset) {
         // Make a call using the token
         $.ajax({
-            url: "https://api.spotify.com/v1/me/playlists",
+            url: "https://api.spotify.com/v1/me/playlists?limit=50&offset=" + offset,
             type: "GET",
             beforeSend: (xhr) => {
                 xhr.setRequestHeader("Authorization", "Bearer " + token);
@@ -61,15 +65,27 @@ class SpotifyLogin extends Component{
             success: (data) => {
                 console.log("data", data);
                 this.setState({
-                    total: data.total,
-                    playlists: data.items
+                    playlists: this.state.playlists.concat(data.items),
                 });
+
+                if(data.next)
+                    this.getPlaylists(this.state.token, 50);
+
+                var reg = /users\/(.*)\/playlists/;
+                var name = data.href.match(reg);
+                console.log(name);
+                this.setState({
+                    username: name[1]
+                });
+
+                // call spotify functions and set it to state
             }
         });
+
     }
 
-    render() {
 
+    render() {
         return (
             <span>
                 {!this.state.token && (
@@ -78,10 +94,9 @@ class SpotifyLogin extends Component{
                        &response_type=token&show_dialog=true`}>spotify</a>
                 )}
 
-                {this.state.token &&
-                (
-                    <p>loading</p>
-                )}
+                {this.state.token && (
+                    <SpotifyPlaylistGenerator playlists={this.state.playlists} token={this.state.token} username={this.state.username}/>
+                    )}
             </span>
         );
     }

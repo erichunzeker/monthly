@@ -1,49 +1,53 @@
-import Spotify from 'spotify-web-api-js';
+import React from 'react';
+import * as $ from "jquery";
 
-export function spotifyLogin() {
-    const CLIENT_ID = process.env.REACT_APP_SPOTIFY_ID;
-    const REDIRECT_URI =
-        process.env.NODE_ENV === "production"
-            ? process.env.REACT_APP_SPOTIFY_PRODUCTION_REDIRECT_URI
-            : process.env.REACT_APP_SPOTIFY_DEVELOPMENT_REDIRECT_URI;
 
-    // const scopes = [
-    //     "user-library-read",
-    //     "playlist-read-private",
-    //     "playlist-modify-public",
-    //     "playlist-modify-private"
-    // ];
-
-    return (
-        "https://accounts.spotify.com/authorize?response_type=token&client_id=" +
-        encodeURIComponent(CLIENT_ID) +
-        "&redirect_uri=" +
-        encodeURIComponent(REDIRECT_URI) +
-        "&scope=playlist-read-private"
-    );
+export function organizeData(playlistData, username) {
+    console.log(playlistData);
+    playlistData = playlistData.filter(playlist => playlist.owner.id === username);
+    return playlistData;
 }
 
-export function checkUrlForSpotifyAccessToken(){
-    console.log("TRTETRETRTRET");
-    const params = getHashParams();
-    const accessToken = params.access_token;
-    if (!accessToken) {
-        return false
+export function getTrackList(token, userPlaylists) {
+    var bigTrackList = [];
+
+    for(var i = 0; i < userPlaylists.length; i++) {
+        var currTrackList = getPlaylists(token, userPlaylists[i].tracks.href, 0);
+        bigTrackList.push(currTrackList);
     }
-    else {
-        return accessToken
-    }
+
+    console.log(bigTrackList);
 }
 
-function getHashParams() {
-    //helper function to parse the query string that spotify sends back when you log in
-    var hashParams = {};
-    var e, r = /([^&;=]+)=?([^&;]*)/g,
-        q = window.location.hash.substring(1);
-    // eslint-disable-next-line
-    while ( e = r.exec(q)) {
-        hashParams[e[1]] = decodeURIComponent(e[2]);
-    }
-    return hashParams;
+function getPlaylists(token, _url, offset) {
+    // Make a call using the token
+    $.ajax({
+        url: _url + "?limit=100&offset=0",
+        type: "GET",
+        beforeSend: (xhr) => {
+            xhr.setRequestHeader("Authorization", "Bearer " + token);
+        },
+        success: (data) => {
+            //console.log("data", data);
+            // this.setState({
+            //     playlists: this.state.playlists.concat(data.items),
+            // });
+            //
+            //  if(data.next)
+                //  this.getPlaylists(token, 100);
+
+            return data;
+            //
+            // var reg = /users\/(.*)\/playlists/;
+            // var name = data.href.match(reg);
+            // console.log(name);
+            // this.setState({
+            //     username: name[1]
+            // });
+
+            // call spotify functions and set it to state
+        }
+    });
+
 }
 

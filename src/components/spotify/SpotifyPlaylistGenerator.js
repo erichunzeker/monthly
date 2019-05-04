@@ -11,16 +11,33 @@
 */
 
 import React, { Component } from 'react';
-import './App.css';
-import SpotifyLogin from './spotify/SpotifyLogin.js';
+import SpotifyLogin from './SpotifyLogin';
+import * as SpotifyFunctions from './SpotifyFunctions';
 
 
-class SpotifyPlaylistGenerator extends Component{
+class SpotifyPlaylistGenerator extends Component {
+
+    // take in all a dict of 12 arr
+    // token
+    // buncha axios or ajax calls to create and alter playlists
+
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        }
+        this.organizePlaylists = SpotifyFunctions.organizeData.bind(this);
+        this.getTrackList = SpotifyFunctions.getTrackList.bind(this);
+    }
 
     render() {
+        var userPlaylists = this.organizePlaylists(this.props.playlists, this.props.username);
+
+        var trackList = this.getTrackList(this.props.token, userPlaylists);
+
         return (
             <header className="App-header">
-                <p>stider dog</p>
+                <p>{userPlaylists.map(playlist => playlist.name + ", ")}</p>
             </header>
         );
     }
