@@ -1,6 +1,6 @@
-export function organizeData(playlistData) {
+export function organizeData(playlistData, username) {
     console.log(playlistData);
-    playlistData = playlistData.filter(playlist => playlist === "Rebels");
+    playlistData = playlistData.filter(playlist => playlist.owner.id === username);
 
 
     playlistData = playlistData.map(playlist => [playlist.name, playlist.tracks.total]);

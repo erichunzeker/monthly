@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import * as SpotifyFunctions from './SpotifyFunctions';
 import * as $ from "jquery";
-import ReactDOM from "react-dom";
-import App from "../../index";
 import SpotifyPlaylistGenerator from './SpotifyPlaylistGenerator';
 
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
@@ -55,14 +53,6 @@ class SpotifyLogin extends Component{
 
             var offset = 0;
             this.getPlaylists(_token, offset);
-
-            offset += 50;
-            console.log(this.numPlaylists);
-            console.log(offset);
-            while(offset < this.state.total) {
-                this.getPlaylists(_token, offset);
-                offset += 50;
-            }
         }
     }
 
@@ -81,9 +71,13 @@ class SpotifyLogin extends Component{
                     playlists: this.state.playlists.concat(data.items),
                     username: data.href
                 });
+
+                var reg = /users\/(.*)\/playlists/;
+                var name = data.href.match(reg);
                 this.numPlaylists = data.total;
 
-                this.organizePlaylists(data.items, );
+                this.organizePlaylists(data.items, name[1]);
+
             }
         });
     }
