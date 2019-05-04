@@ -12,14 +12,27 @@
 
 import React, { Component } from 'react';
 import SpotifyLogin from './SpotifyLogin';
+import SpotifyFunctions from './SpotifyFunctions';
 
 
 class SpotifyPlaylistGenerator extends Component {
 
+    // take in all a dict of 12 arr
+    // token
+    // buncha axios or ajax calls to create and alter playlists
+
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        }
+    }
+
     render() {
+
         return (
             <header className="App-header">
-                <p>stider dog</p>
+                <p>{this.props.playlists.map(playlist => playlist.name + ", ")}</p>
             </header>
         );
     }

@@ -53,6 +53,8 @@ class SpotifyLogin extends Component{
 
             var offset = 0;
             this.getPlaylists(_token, offset);
+            console.log(this.state.total);
+
         }
     }
 
@@ -76,8 +78,11 @@ class SpotifyLogin extends Component{
                 var name = data.href.match(reg);
                 this.numPlaylists = data.total;
 
-                this.organizePlaylists(data.items, name[1]);
+                this.setState({
+                    playlists:  this.organizePlaylists(data.items, name[1])
+                })
 
+                // call spotify functions and set it to state
             }
         });
     }
@@ -93,7 +98,7 @@ class SpotifyLogin extends Component{
                 )}
 
                 {this.state.token && (
-                    <SpotifyPlaylistGenerator/>
+                    <SpotifyPlaylistGenerator playlists={this.state.playlists}/>
                     )}
             </span>
         );
