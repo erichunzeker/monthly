@@ -12,7 +12,7 @@
 
 import React, { Component } from 'react';
 import SpotifyLogin from './SpotifyLogin';
-import SpotifyFunctions from './SpotifyFunctions';
+import * as SpotifyFunctions from './SpotifyFunctions';
 
 
 class SpotifyPlaylistGenerator extends Component {
@@ -26,13 +26,16 @@ class SpotifyPlaylistGenerator extends Component {
         this.state = {
 
         }
+        this.organizePlaylists = SpotifyFunctions.organizeData.bind(this);
+        console.log(this.props);
     }
 
     render() {
+        var userPlaylists = this.organizePlaylists(this.props.playlists, this.props.username);
 
         return (
             <header className="App-header">
-                <p>{this.props.playlists.map(playlist => playlist.name + ", ")}</p>
+                <p>{userPlaylists.map(playlist => playlist.name + ", ")}</p>
             </header>
         );
     }

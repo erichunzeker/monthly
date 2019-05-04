@@ -26,14 +26,11 @@ const hash = window.location.hash
 window.location.hash = "";
 
 
-
 class SpotifyLogin extends Component{
-    numPlaylists = 0;
     constructor() {
         super();
         this.state = {
             token: null,
-            total: 0,
             playlists: [],
             username: null,
         };
@@ -53,7 +50,6 @@ class SpotifyLogin extends Component{
 
             var offset = 0;
             this.getPlaylists(_token, offset);
-            console.log(this.state.total);
 
         }
     }
@@ -69,22 +65,23 @@ class SpotifyLogin extends Component{
             success: (data) => {
                 console.log("data", data);
                 this.setState({
-                    total: data.total,
                     playlists: this.state.playlists.concat(data.items),
-                    username: data.href
                 });
+
+                if(data.next)
+                    this.getPlaylists(this.state.token, 50);
 
                 var reg = /users\/(.*)\/playlists/;
                 var name = data.href.match(reg);
-                this.numPlaylists = data.total;
-
+                console.log(name);
                 this.setState({
-                    playlists:  this.organizePlaylists(data.items, name[1])
-                })
+                    username: name[1]
+                });
 
                 // call spotify functions and set it to state
             }
         });
+
     }
 
 
@@ -98,7 +95,7 @@ class SpotifyLogin extends Component{
                 )}
 
                 {this.state.token && (
-                    <SpotifyPlaylistGenerator playlists={this.state.playlists}/>
+                    <SpotifyPlaylistGenerator playlists={this.state.playlists} token={this.state.token} username={this.state.username}/>
                     )}
             </span>
         );
