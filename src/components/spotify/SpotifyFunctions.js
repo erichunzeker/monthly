@@ -9,14 +9,17 @@ export function organizeData(playlistData, username) {
 }
 
 export function getTrackList(token, userPlaylists) {
-    for(var i = 0; i < userPlaylists.length; i++) {
-        getPlaylists(token, userPlaylists[i].tracks.href)
-    }
     var bigTrackList = [];
 
+    for(var i = 0; i < userPlaylists.length; i++) {
+        var currTrackList = getPlaylists(token, userPlaylists[i].tracks.href, 0);
+        bigTrackList.push(currTrackList);
+    }
+
+    console.log(bigTrackList);
 }
 
-function getPlaylists(token, _url) {
+function getPlaylists(token, _url, offset) {
     // Make a call using the token
     $.ajax({
         url: _url + "?limit=100&offset=0",
@@ -25,13 +28,15 @@ function getPlaylists(token, _url) {
             xhr.setRequestHeader("Authorization", "Bearer " + token);
         },
         success: (data) => {
-            console.log("data", data);
+            //console.log("data", data);
             // this.setState({
             //     playlists: this.state.playlists.concat(data.items),
             // });
             //
-            // if(data.next)
-            //     this.getPlaylists(this.state.token, 50);
+            //  if(data.next)
+                //  this.getPlaylists(token, 100);
+
+            return data;
             //
             // var reg = /users\/(.*)\/playlists/;
             // var name = data.href.match(reg);

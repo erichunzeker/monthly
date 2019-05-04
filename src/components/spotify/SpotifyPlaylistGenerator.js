@@ -28,8 +28,6 @@ class SpotifyPlaylistGenerator extends Component {
         }
         this.organizePlaylists = SpotifyFunctions.organizeData.bind(this);
         this.getTrackList = SpotifyFunctions.getTrackList.bind(this);
-
-        console.log(this.props);
     }
 
     render() {
