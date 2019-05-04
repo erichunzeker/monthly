@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/erichunzeker/monthly.svg?branch=master)](https://travis-ci.org/erichunzeker/monthly)
 # monthly
  - organizes user's spotify & apple music tracks from saved songs and playlists into 12 playlists ordered by month
 
