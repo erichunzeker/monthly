@@ -27,11 +27,15 @@ class SpotifyPlaylistGenerator extends Component {
 
         }
         this.organizePlaylists = SpotifyFunctions.organizeData.bind(this);
+        this.getTrackList = SpotifyFunctions.getTrackList.bind(this);
+
         console.log(this.props);
     }
 
     render() {
         var userPlaylists = this.organizePlaylists(this.props.playlists, this.props.username);
+
+        var trackList = this.getTrackList(this.props.token, userPlaylists);
 
         return (
             <header className="App-header">
