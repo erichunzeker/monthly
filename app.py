@@ -7,9 +7,9 @@ import spotipy
 
 app = Flask(__name__)
 
-app.secret_key = 'idk bruh'
+app.secret_key = 'password'
 API_BASE = 'https://accounts.spotify.com'
-REDIRECT_URI = "http://localhost:5000/api_callback"
+REDIRECT_URI = str(os.environ.get('SPOTIPY_REDIRECT_URI')) + "api_callback"
 CLI_ID = os.environ.get('SPOTIPY_CLIENT_ID')
 CLI_SEC = os.environ.get('SPOTIPY_CLIENT_SECRET')
 SCOPE = 'playlist-modify-public,playlist-modify-private'
@@ -41,7 +41,6 @@ def index():
 @app.route('/login/')
 def login():
 	auth_url = f'{API_BASE}/authorize?client_id={CLI_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={SCOPE}&show_dialog={SHOW_DIALOG}'
-	print(auth_url)
 	return redirect(auth_url)
 
 
@@ -60,18 +59,30 @@ def api_callback():
 	})
 
 	res_body = res.json()
-	print(res.json())
 	session["token"] = res_body.get("access_token")
 
-	return redirect("test")
+	return redirect("parse")
 
 
-@app.route('/test')
-def hello_world():
-	username = 'erichunzeker'
-	# scope = 'playlist-modify-public'
-	# token = util.prompt_for_user_token(username, scope)
+@app.route('/parse')
+def parse():
 
+
+	return render_template('loading.html')
+	# parse_playlists()
+	# return render_template('complete.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+	error = None
+	if request.method == 'POST':
+		monthly = parse_playlists()
+		return render_template('complete.html', monthly=monthly)
+	return render_template('complete.html', error=error)
+
+
+def parse_playlists():
 	if session['token']:
 		sp = spotipy.Spotify(auth=session['token'])
 		res = sp.current_user()
@@ -93,7 +104,8 @@ def hello_world():
 		while playlists['next']:
 			playlists = sp.next(playlists)
 			for playlist in playlists['items']:
-				if playlist['owner']['id'] == username:
+				if playlist['owner']['id'] == username and playlist['name'] != 'nunu' and playlist[
+					'name'] != 'archives and onion' and playlist['name'] != 'pollen collective':
 					print()
 					print(playlist['name'])
 					print('  total tracks', playlist['tracks']['total'])
@@ -113,8 +125,6 @@ def hello_world():
 
 		print(str(monthly))
 
-		# spuser_playlist_create(user, name, public=True, description='')
-
 		t = sp.user_playlist_create(user=username, name='January Tunes', public=True,
 									description='This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of January')
 		for i in range(0, math.ceil(len(monthly[0]) / 100)):
@@ -122,6 +132,8 @@ def hello_world():
 			cur = cur[(i * 100):((i * 100) + 99)]
 
 			sp.user_playlist_add_tracks(user=username, playlist_id=t['id'], tracks=cur)
+
+		return monthly
 
 
 if __name__ == '__main__':
