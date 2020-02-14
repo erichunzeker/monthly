@@ -125,21 +125,26 @@ def parse_playlists(ignore_option):
 					show_tracks(tracks)
 
 		monthly = [[], [], [], [], [], [], [], [], [], [], [], []]
+		new_playlists = []
+		months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 		for item in track_dict:
 			track_month = track_dict[item]
 			track_month = track_month.month
 
 			monthly[track_month - 1].append(item)
 
-		new_playlist = sp.user_playlist_create(user=username, name='January Tunes', public=True,
-									description='This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of January')
-		for i in range(0, math.ceil(len(monthly[0]) / 100)):
-			cur = monthly[0]
-			cur = cur[(i * 100):((i * 100) + 99)]
+		for x in range(len(months)):
+			new_playlist = sp.user_playlist_create(user=username, name=f'{months[x]} Tunes', public=True,
+										description=f'This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of {months[x]}')
+			for i in range(0, math.ceil(len(monthly[x]) / 100)):
+				cur = monthly[x]
+				cur = cur[(i * 100):((i * 100) + 99)]
 
-			sp.user_playlist_add_tracks(user=username, playlist_id=new_playlist['id'], tracks=cur)
+				sp.user_playlist_add_tracks(user=username, playlist_id=new_playlist['id'], tracks=cur)
 
-		return monthly
+			new_playlists.append(new_playlist)
+
+		return new_playlists
 
 
 if __name__ == '__main__':
