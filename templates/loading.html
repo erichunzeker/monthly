@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
 <form action="{{ url_for('register') }}" method="post">
+    {%  for playlist in all_playlists %}
+        <div class="ignore-playlists">
+            <input type="checkbox" name="checked" value="{{ playlist['name'] }}"/>
+            <p class="playlist-name">{{ playlist['name'] }}</p>
+            <br/>
+        </div>
+    {% endfor %}
     <input type="submit" value="add">
 </form>
 {% endblock %}
