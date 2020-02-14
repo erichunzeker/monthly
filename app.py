@@ -37,6 +37,7 @@ def show_tracks(tracks):
 def index():
 	return render_template('index.html')
 
+
 @app.route('/login/')
 def login():
 	auth_url = f'{API_BASE}/authorize?client_id={CLI_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={SCOPE}&show_dialog={SHOW_DIALOG}'
