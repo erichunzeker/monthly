@@ -10,8 +10,8 @@ app = Flask(__name__)
 app.secret_key = 'idk bruh'
 API_BASE = 'https://accounts.spotify.com'
 REDIRECT_URI = "http://localhost:5000/api_callback"
-CLI_ID = os.getenv('SPOTIPY_CLIENT_ID')
-CLI_SEC = os.getenv('SPOTIPY_CLIENT_SECRET')
+CLI_ID = os.environ.get('SPOTIPY_CLIENT_ID')
+CLI_SEC = os.environ.get('SPOTIPY_CLIENT_SECRET')
 SCOPE = 'playlist-modify-public,playlist-modify-private'
 SHOW_DIALOG = True
 
