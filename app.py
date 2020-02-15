@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, session, make_response, session, redirect
+from flask import Flask, render_template, redirect, request, session, make_response, redirect
 import os
 import requests
 import datetime
@@ -7,14 +7,16 @@ import spotipy
 
 app = Flask(__name__)
 
-app.secret_key = 'idk bruh'
+app.secret_key = 'password'
 API_BASE = 'https://accounts.spotify.com'
-REDIRECT_URI = "http://localhost:5000/api_callback"
+REDIRECT_URI = str(os.environ.get('SPOTIPY_REDIRECT_URI')) + "api_callback"
 CLI_ID = os.environ.get('SPOTIPY_CLIENT_ID')
 CLI_SEC = os.environ.get('SPOTIPY_CLIENT_SECRET')
 SCOPE = 'playlist-modify-public,playlist-modify-private'
 SHOW_DIALOG = True
 
+
+# todo: make a class and make this a class var
 track_dict = {}
 
 
@@ -41,8 +43,11 @@ def index():
 @app.route('/login/')
 def login():
 	auth_url = f'{API_BASE}/authorize?client_id={CLI_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={SCOPE}&show_dialog={SHOW_DIALOG}'
-	print(auth_url)
 	return redirect(auth_url)
+
+@app.route('/apple/')
+def apple():
+	return render_template("apple.html")
 
 
 @app.route('/api_callback')
@@ -60,29 +65,62 @@ def api_callback():
 	})
 
 	res_body = res.json()
-	print(res.json())
 	session["token"] = res_body.get("access_token")
 
-	return redirect("test")
+	return redirect("parse")
 
 
-@app.route('/test')
-def hello_world():
-	username = 'erichunzeker'
-	# scope = 'playlist-modify-public'
-	# token = util.prompt_for_user_token(username, scope)
+@app.route('/parse', methods=['GET', 'POST'])
+def parse():
+	all_playlists = get_all_playlists()
 
+	return render_template('loading.html', all_playlists=all_playlists)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+	error = None
+	if request.method == 'POST':
+		ignore_option = request.form.to_dict(flat=False)
+		if ignore_option and 'checked' in ignore_option:
+			ignore = ignore_option['checked']
+		else:
+			ignore = []
+
+		results = parse_playlists(ignore)
+		return render_template('complete.html', playlists=results)
+	return render_template('complete.html', error=error)
+
+
+def get_all_playlists():
+	all_playlists = []
 	if session['token']:
 		sp = spotipy.Spotify(auth=session['token'])
 		res = sp.current_user()
 		username = res['id']
 		playlists = sp.user_playlists(username)
 		for playlist in playlists['items']:
-			if playlist['owner']['id'] == username and playlist['name'] != 'nunu' and playlist[
-				'name'] != 'archives and onion' and playlist['name'] != 'pollen collective':
-				print()
-				print(playlist['name'])
-				print('  total tracks', playlist['tracks']['total'])
+			if playlist['owner']['id'] == username:
+				all_playlists.append(playlist)
+
+		while playlists['next']:
+			playlists = sp.next(playlists)
+			for playlist in playlists['items']:
+				if playlist['owner']['id'] == username:
+					all_playlists.append(playlist)
+
+	return all_playlists
+
+
+def parse_playlists(ignore_option):
+	if session['token']:
+		sp = spotipy.Spotify(auth=session['token'])
+		res = sp.current_user()
+		username = res['id']
+		playlists = get_all_playlists()
+
+		for playlist in playlists:
+			if playlist['name'] not in ignore_option:
 				results = sp.playlist(playlist['id'], fields="tracks,next")
 				tracks = results['tracks']
 				show_tracks(tracks)
@@ -90,38 +128,27 @@ def hello_world():
 					tracks = sp.next(tracks)
 					show_tracks(tracks)
 
-		while playlists['next']:
-			playlists = sp.next(playlists)
-			for playlist in playlists['items']:
-				if playlist['owner']['id'] == username:
-					print()
-					print(playlist['name'])
-					print('  total tracks', playlist['tracks']['total'])
-					results = sp.playlist(playlist['id'], fields="tracks,next")
-					tracks = results['tracks']
-					show_tracks(tracks)
-					while tracks['next']:
-						tracks = sp.next(tracks)
-						show_tracks(tracks)
-
 		monthly = [[], [], [], [], [], [], [], [], [], [], [], []]
+		new_playlists = []
+		months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 		for item in track_dict:
 			track_month = track_dict[item]
 			track_month = track_month.month
 
 			monthly[track_month - 1].append(item)
 
-		print(str(monthly))
+		for x in range(len(months)):
+			new_playlist = sp.user_playlist_create(user=username, name=f'{months[x]} Tunes', public=True,
+										description=f'This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of {months[x]}')
+			for i in range(0, math.ceil(len(monthly[x]) / 100)):
+				cur = monthly[x]
+				cur = cur[(i * 100):((i * 100) + 99)]
 
-		# spuser_playlist_create(user, name, public=True, description='')
+				sp.user_playlist_add_tracks(user=username, playlist_id=new_playlist['id'], tracks=cur)
 
-		t = sp.user_playlist_create(user=username, name='January Tunes', public=True,
-									description='This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of January')
-		for i in range(0, math.ceil(len(monthly[0]) / 100)):
-			cur = monthly[0]
-			cur = cur[(i * 100):((i * 100) + 99)]
+			new_playlists.append(new_playlist)
 
-			sp.user_playlist_add_tracks(user=username, playlist_id=t['id'], tracks=cur)
+		return new_playlists
 
 
 if __name__ == '__main__':
