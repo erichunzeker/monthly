@@ -70,14 +70,14 @@ def api_callback():
 	session["token"] = res_body.get("access_token")
 
 	token = res_body.get("access_token")
-	response = redirect(url_for('parse'))
-	response.set_cookie('token', token)
-	return response
+	return redirect(url_for('parse'))
 
 
 @app.route('/parse')
 def parse():
-	token = request.cookies.get('token')
+	token = session['token']
+	# token = request.headers.get('token')
+	print(token)
 	all_playlists = get_all_playlists(token)
 	if len(all_playlists) == 0:
 		return render_template('error.html', test=session['token'], token=token)
