@@ -18,6 +18,8 @@ SHOW_DIALOG = True
 
 # todo: make a class and make this a class var
 track_dict = {}
+token = ''
+
 
 
 def show_tracks(tracks):
@@ -66,6 +68,7 @@ def api_callback():
 
 	res_body = res.json()
 	session["token"] = res_body.get("access_token")
+	token = res_body.get("access_token")
 	return redirect(url_for('parse'))
 
 
@@ -73,7 +76,7 @@ def api_callback():
 def parse():
 	all_playlists = get_all_playlists()
 	if len(all_playlists) == 0:
-		return render_template('error.html', test=session['token'])
+		return render_template('error.html', test=session['token'], token=token)
 	return render_template('loading.html', all_playlists=all_playlists)
 
 
@@ -94,8 +97,8 @@ def register():
 
 def get_all_playlists():
 	all_playlists = []
-	if session['token']:
-		sp = spotipy.Spotify(auth=session['token'])
+	if token:
+		sp = spotipy.Spotify(auth=token)
 		res = sp.current_user()
 		username = res['id']
 		playlists = sp.user_playlists(username)
@@ -113,8 +116,8 @@ def get_all_playlists():
 
 
 def parse_playlists(ignore_option):
-	if session['token']:
-		sp = spotipy.Spotify(auth=session['token'])
+	if token:
+		sp = spotipy.Spotify(auth=token)
 		res = sp.current_user()
 		username = res['id']
 		playlists = get_all_playlists()
