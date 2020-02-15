@@ -7,7 +7,7 @@ import spotipy
 
 app = Flask(__name__)
 
-app.secret_key = 'password'
+app.secret_key = os.environ.get('APP_SECRET_KEY')
 API_BASE = 'https://accounts.spotify.com'
 REDIRECT_URI = str(os.environ.get('SPOTIPY_REDIRECT_URI')) + "api_callback"
 CLI_ID = os.environ.get('SPOTIPY_CLIENT_ID')
