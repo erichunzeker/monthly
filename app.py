@@ -72,6 +72,8 @@ def api_callback():
 @app.route('/parse/')
 def parse():
 	all_playlists = get_all_playlists()
+	if all_playlists is None:
+		return render_template('error.html', test=session['token'])
 	return render_template('loading.html', all_playlists=all_playlists)
 
 
