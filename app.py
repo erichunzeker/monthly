@@ -73,10 +73,11 @@ def api_callback():
 
 @app.route('/parse/')
 def parse():
-	all_playlists = get_all_playlists(request.args.get('token'))
+	token = request.args.get('token')
+	all_playlists = get_all_playlists(token)
 	if len(all_playlists) == 0:
-		return render_template('error.html', test=session['token'], token=request.args.get('token'))
-	return render_template('loading.html', all_playlists=all_playlists, token=request.args.get('token'))
+		return render_template('error.html', test=session['token'], token=token)
+	return render_template('loading.html', all_playlists=all_playlists, token=token)
 
 
 @app.route('/register/', methods=['GET', 'POST'])
