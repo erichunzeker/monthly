@@ -70,14 +70,14 @@ def api_callback():
 	return redirect("parse")
 
 
-@app.route('/parse', methods=['GET', 'POST'])
+@app.route('/parse/', methods=['GET', 'POST'])
 def parse():
 	all_playlists = get_all_playlists()
 
 	return render_template('loading.html', all_playlists=all_playlists)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register/', methods=['GET', 'POST'])
 def register():
 	error = None
 	if request.method == 'POST':
