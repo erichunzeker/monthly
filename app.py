@@ -66,7 +66,7 @@ def api_callback():
 	})
 
 	res_body = res.json()
-	session["token"] = res_body.get("access_token")
+	# session["token"] = res_body.get("access_token")
 	token = res_body.get("access_token")
 	return redirect(url_for('parse', token=token))
 
