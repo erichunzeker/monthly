@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1>step 1: select any/all playlists that you would like to exclude</h1>
-<form class="form-menu" action="{{ url_for('register') }}" method="post">
+<form class="form-menu" action="{{ url_for('register', token=token) }}" method="post">
     {%  for playlist in all_playlists %}
         <div class="ignore-playlists">
             <input id="{{ playlist['name'] }}" type="checkbox" name="checked" value="{{ playlist['name'] }}"/>

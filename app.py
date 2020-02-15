@@ -18,7 +18,6 @@ SHOW_DIALOG = True
 
 # todo: make a class and make this a class var
 track_dict = {}
-token = ''
 
 
 
@@ -69,15 +68,15 @@ def api_callback():
 	res_body = res.json()
 	session["token"] = res_body.get("access_token")
 	token = res_body.get("access_token")
-	return redirect(url_for('parse'))
+	return redirect(url_for('parse', token= token))
 
 
 @app.route('/parse/')
 def parse():
-	all_playlists = get_all_playlists()
+	all_playlists = get_all_playlists(request.args.get('token'))
 	if len(all_playlists) == 0:
-		return render_template('error.html', test=session['token'], token=token)
-	return render_template('loading.html', all_playlists=all_playlists)
+		return render_template('error.html', test=session['token'], token=request.args.get('token'))
+	return render_template('loading.html', all_playlists=all_playlists, token=request.args.get('token'))
 
 
 @app.route('/register/', methods=['GET', 'POST'])
@@ -90,12 +89,12 @@ def register():
 		else:
 			ignore = []
 
-		results = parse_playlists(ignore)
+		results = parse_playlists(ignore, token=request.args.get('token'))
 		return render_template('complete.html', playlists=results)
 	return render_template('complete.html', error=error)
 
 
-def get_all_playlists():
+def get_all_playlists(token):
 	all_playlists = []
 	if token:
 		sp = spotipy.Spotify(auth=token)
@@ -115,7 +114,7 @@ def get_all_playlists():
 	return all_playlists
 
 
-def parse_playlists(ignore_option):
+def parse_playlists(ignore_option, token):
 	if token:
 		sp = spotipy.Spotify(auth=token)
 		res = sp.current_user()
