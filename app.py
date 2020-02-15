@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, session, make_response, redirect
+from flask import Flask, render_template, redirect, request, session, make_response, redirect, url_for
 import os
 import requests
 import datetime
@@ -66,8 +66,7 @@ def api_callback():
 
 	res_body = res.json()
 	session["token"] = res_body.get("access_token")
-
-	return redirect("parse")
+	return redirect(url_for('parse'))
 
 
 @app.route('/parse/')
