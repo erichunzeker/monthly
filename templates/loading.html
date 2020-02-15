@@ -1,13 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
-<form action="{{ url_for('register') }}" method="post">
+
+<h1>step 1: select any/all playlists that you would like to exclude</h1>
+<form class="form-menu" action="{{ url_for('register') }}" method="post">
     {%  for playlist in all_playlists %}
         <div class="ignore-playlists">
-            <input type="checkbox" name="checked" value="{{ playlist['name'] }}"/>
-            <p class="playlist-name">{{ playlist['name'] }}</p>
+            <input id="{{ playlist['name'] }}" type="checkbox" name="checked" value="{{ playlist['name'] }}"/>
+{#            <p class="playlist-name">{{ playlist['name'] }}</p>#}
+            <label for="{{ playlist['name'] }}">{{ playlist['name'] }} - {{ playlist['tracks']['total']}} total tracks</label>
             <br/>
         </div>
     {% endfor %}
-    <input type="submit" value="add">
+    <input class="generate-button" type="submit" value="generate playlists">
 </form>
 {% endblock %}

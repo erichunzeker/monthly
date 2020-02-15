@@ -1,4 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-<p>{{ monthly }}</p>
+    {% for playlist in playlists %}
+        <a href="{{ playlist['external_urls']['spotify'] }}">{{ playlist['name'] }}</a>
+        <br/>
+        <br/>
+    {%  endfor %}
 {% endblock %}

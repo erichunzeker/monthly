@@ -45,6 +45,10 @@ def login():
 	auth_url = f'{API_BASE}/authorize?client_id={CLI_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={SCOPE}&show_dialog={SHOW_DIALOG}'
 	return redirect(auth_url)
 
+@app.route('/apple/')
+def apple():
+	return render_template("apple.html")
+
 
 @app.route('/api_callback')
 def api_callback():
@@ -83,8 +87,8 @@ def register():
 		else:
 			ignore = []
 
-		monthly = parse_playlists(ignore)
-		return render_template('complete.html', monthly=monthly)
+		results = parse_playlists(ignore)
+		return render_template('complete.html', playlists=results)
 	return render_template('complete.html', error=error)
 
 
