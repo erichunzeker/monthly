@@ -70,10 +70,9 @@ def api_callback():
 	return redirect("parse")
 
 
-@app.route('/parse/', methods=['GET', 'POST'])
+@app.route('/parse/')
 def parse():
 	all_playlists = get_all_playlists()
-
 	return render_template('loading.html', all_playlists=all_playlists)
 
 
