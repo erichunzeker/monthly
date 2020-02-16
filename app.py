@@ -12,7 +12,7 @@ API_BASE = 'https://accounts.spotify.com'
 REDIRECT_URI = str(os.environ.get('SPOTIPY_REDIRECT_URI')) + "api_callback"
 CLI_ID = os.environ.get('SPOTIPY_CLIENT_ID')
 CLI_SEC = os.environ.get('SPOTIPY_CLIENT_SECRET')
-SCOPE = 'playlist-modify-public,playlist-modify-private'
+SCOPE = 'playlist-modify-public,playlist-modify-private,playlist-read-private'
 SHOW_DIALOG = True
 
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
