@@ -59,7 +59,7 @@ def api_callback():
 	res = requests.post(auth_token_url, data={
 		"grant_type": "authorization_code",
 		"code": code,
-		"redirect_uri": "http://localhost:5000/api_callback",
+		"redirect_uri": REDIRECT_URI,
 		"client_id": CLI_ID,
 		"client_secret": CLI_SEC
 	})
