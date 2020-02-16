@@ -37,15 +37,28 @@ h1, h2, h3 {
 
 }
 
+#monthly-header {
+  font-size: 200%;
+  font-weight: 200;
+  width: 100%;
+  display: inherit;
+  text-align: center;
+  justify-content: center;
+  margin: 1% 0 0;
+  position: absolute;
+  top: 2%;
+
+}
+
 #streaming-options {
   width: 100%;
   display: inherit;
 }
 
 #spotify-link {
-  width: 50%;
-  align-items: center;
-  justify-content: left;
+  width: 100%;
+  font-weight: 200;
+  font-size: 600%;
   text-align: center;
 }
 
@@ -69,13 +82,14 @@ h1, h2, h3 {
 
 #app-description {
   width: 100%;
-  font-size: calc(1px + 2vmin);
+  font-size: 12px;
   text-align: center;
   justify-content: center;
   padding-left: 5%;
   padding-right: 5%;
   position: absolute;
-  bottom: 15%;
+  padding-top: 10%;
+  bottom: 5%;
 }
 
 a {

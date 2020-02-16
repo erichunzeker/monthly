@@ -92,8 +92,8 @@ def menu():
 	return render_template('menu.html', all_playlists=all_playlists, token=token, months=months)
 
 
-@app.route('/register/', methods=['GET', 'POST'])
-def register():
+@app.route('/finish/', methods=['GET', 'POST'])
+def finish():
 	error = None
 	if request.method == 'POST':
 		menu_request = request.form.to_dict(flat=False)

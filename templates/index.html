@@ -1,18 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
 
-
 <body class="App-header">
+    <h1 id="monthly-header">monthly</h1>
     <div id="streaming-options">
-        <div id="spotify-link">
-            <h1><a href="/login">spotify</a></h1>
-        </div>
-        <div id="apple-music-link">
-            <h1><a href="/apple">apple music</a></h1>
-        </div>
+            <h1 id="spotify-link"><a href="/login" id="login-link">login to spotify</a></h1>
     </div>
-    <p id="app-description">login to either platform and monthly will automatically create 12 playlists
-        - each containing every song you've
-        ever saved or added to a playlist, organized by month</p>
+    <p id="app-description">
+        click the link to login to spotify and monthly will automatically create aggregated playlists based on selected criteria
+    </p>
 </body>
 {% endblock %}

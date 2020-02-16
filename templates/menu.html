@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 </body>
-    <form class="form-menu" action="{{ url_for('register') }}" method="post">
+    <form class="form-menu" action="{{ url_for('finish') }}" method="post">
 
         <h1 class="directions">step 1: select any/all playlists that you would like to exclude</h1>
         {%  for playlist in all_playlists %}
