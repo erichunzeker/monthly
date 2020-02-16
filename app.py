@@ -68,12 +68,8 @@ def api_callback():
 	session["token"] = res_body.get("access_token")
 
 	token = res_body.get("access_token")
-	# return redirect(url_for('parse'))
+	return redirect(url_for('parse'))
 
-	all_playlists = get_all_playlists(token)
-	if len(all_playlists) == 0:
-		return render_template('error.html', test=session['token'], token=token)
-	return render_template('loading.html', all_playlists=all_playlists, token=token)
 
 @app.route('/parse')
 def parse():
