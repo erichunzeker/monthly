@@ -68,7 +68,7 @@ def menu():
 	token = session['token']
 	all_playlists = get_all_playlists(token)
 	if len(all_playlists) == 0:
-		return render_template('error.html', test=session['token'], token=token)
+		return render_template('error.html')
 	return render_template('menu.html', all_playlists=all_playlists, token=token, months=months)
 
 
@@ -183,21 +183,23 @@ def parse_playlists(agg_type, ignore_option, saved_tracks, token):
 			num_playlists = 12
 			lookup = months
 			ref = monthly
+			desc_type = 'month'
 		elif agg_type == 'seasonal':
 			num_playlists = 4
 			lookup = seasons
 			ref = seasonal
+			desc_type = 'season'
 		else:
 			num_playlists = 1
 			lookup = [agg_type]
 			ref = single_month
+			desc_type = 'month'
 
 		for x in range(num_playlists):
-			new_playlist = sp.user_playlist_create(user=username, name=f'{lookup[x]} Tunes', public=True, description=f'This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of {lookup[x]}')
+			new_playlist = sp.user_playlist_create(user=username, name=f'{lookup[x]} Tunes', public=True, description=f'this is an automatically generated playlist that includes all songs added to any one of my playlists in the {desc_type} of {lookup[x]}')
 			for i in range(0, math.ceil(len(ref[x]) / 100)):
 				cur = ref[x]
 				cur = cur[(i * 100):((i * 100) + 99)]
-
 				sp.user_playlist_add_tracks(user=username, playlist_id=new_playlist['id'], tracks=cur)
 
 			new_playlists.append(new_playlist)
