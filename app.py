@@ -5,7 +5,6 @@ import datetime
 import math
 import spotipy
 
-
 app = Flask(__name__)
 
 app.secret_key = os.environ.get('APP_SECRET_KEY')
@@ -16,15 +15,14 @@ CLI_SEC = os.environ.get('SPOTIPY_CLIENT_SECRET')
 SCOPE = 'playlist-modify-public,playlist-modify-private'
 SHOW_DIALOG = True
 
-# todo: make a class and make this a class var
-track_dict = {}
+months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+seasons = ['spring', 'summer', 'autumn', 'winter']
 
 
-def show_tracks(tracks):
+def show_tracks(tracks, track_dict):
 	for i, item in enumerate(tracks['items']):
 		track = item['track']
-		added = item['added_at']
-		added = added.split('T')[0]
+		added = item['added_at'].split('T')[0]
 		uri = track['uri']
 		d = datetime.datetime.strptime(added, "%Y-%m-%d")
 		if 'local' not in uri:
@@ -67,32 +65,35 @@ def api_callback():
 	res_body = res.json()
 	session["token"] = res_body.get("access_token")
 
-	token = res_body.get("access_token")
-	return redirect(url_for('parse'))
+	return redirect(url_for('menu'))
 
 
-@app.route('/parse')
-def parse():
+@app.route('/menu')
+def menu():
 	token = session['token']
-	# token = request.headers.get('token')
-	print(token)
 	all_playlists = get_all_playlists(token)
 	if len(all_playlists) == 0:
 		return render_template('error.html', test=session['token'], token=token)
-	return render_template('loading.html', all_playlists=all_playlists, token=token)
+	return render_template('menu.html', all_playlists=all_playlists, token=token, months=months)
 
 
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
 	error = None
 	if request.method == 'POST':
-		ignore_option = request.form.to_dict(flat=False)
-		if ignore_option and 'checked' in ignore_option:
-			ignore = ignore_option['checked']
+		menu_request = request.form.to_dict(flat=False)
+		if menu_request and 'checked' in menu_request:
+			ignore = menu_request['checked']
 		else:
 			ignore = []
+		if menu_request and 'agg_type' in menu_request:
+			agg_type = menu_request['agg_type'][0]
+		else:
+			agg_type = 'monthly'
+		if menu_request and agg_type == 'single-month' and 'single-month' in menu_request:
+			agg_type = menu_request['single-month'][0]
 
-		results = parse_playlists(ignore, token=session['token'])
+		results = parse_playlists(agg_type, ignore, token=session['token'])
 		return render_template('complete.html', playlists=results)
 	return render_template('complete.html', error=error)
 
@@ -117,37 +118,72 @@ def get_all_playlists(token):
 	return all_playlists
 
 
-def parse_playlists(ignore_option, token):
+def parse_playlists(agg_type, ignore_option, token):
 	if token:
 		sp = spotipy.Spotify(auth=token)
 		res = sp.current_user()
 		username = res['id']
 		playlists = get_all_playlists(token)
+		track_dict = {}
+		new_playlists = []
 
 		for playlist in playlists:
 			if playlist['name'] not in ignore_option:
 				results = sp.playlist(playlist['id'], fields="tracks,next")
 				tracks = results['tracks']
-				show_tracks(tracks)
+				show_tracks(tracks, track_dict)
 				while tracks['next']:
 					tracks = sp.next(tracks)
-					show_tracks(tracks)
+					show_tracks(tracks, track_dict)
 
 		monthly = [[], [], [], [], [], [], [], [], [], [], [], []]
-		new_playlists = []
-		months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
-				  'November', 'December']
+		seasonal = [[], [], [], []]
+		single_month = [[]]
+
 		for item in track_dict:
-			track_month = track_dict[item]
-			track_month = track_month.month
+			track_date = track_dict[item]
+			track_month = track_date.month
+			track_day = track_date.day
 
-			monthly[track_month - 1].append(item)
+			if agg_type == 'monthly':
+				monthly[track_month - 1].append(item)
 
-		for x in range(len(months)):
-			new_playlist = sp.user_playlist_create(user=username, name=f'{months[x]} Tunes', public=True,
-												   description=f'This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of {months[x]}')
-			for i in range(0, math.ceil(len(monthly[x]) / 100)):
-				cur = monthly[x]
+			elif agg_type == 'seasonal':
+				# Spring runs from March 1 to May 31;
+				# Summer runs from June 1 to August 31;
+				# Fall (autumn) runs from September 1 to November 30; and
+				# Winter runs from December 1 to February 28 (February 29 in a leap year).
+
+				if 2 < track_month < 6:  # spring
+					seasonal[0].append(item)
+				elif 5 < track_month < 9:  # summer
+					seasonal[1].append(item)
+				elif 8 < track_month < 12:  # fall
+					seasonal[2].append(item)
+				else:  # winter
+					seasonal[3].append(item)
+			else:
+				if months.index(agg_type) == track_month - 1:  # i.e. January
+					single_month[0].append(item)
+
+		if agg_type == 'monthly':
+			num_playlists = 12
+			lookup = months
+			ref = monthly
+		elif agg_type == 'seasonal':
+			num_playlists = 4
+			lookup = seasons
+			ref = seasonal
+		else:
+			num_playlists = 1
+			lookup = [agg_type]
+			ref = single_month
+
+		for x in range(num_playlists):
+			new_playlist = sp.user_playlist_create(user=username, name=f'{lookup[x]} Tunes', public=True,
+												   description=f'This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of {lookup[x]}')
+			for i in range(0, math.ceil(len(ref[x]) / 100)):
+				cur = ref[x]
 				cur = cur[(i * 100):((i * 100) + 99)]
 
 				sp.user_playlist_add_tracks(user=username, playlist_id=new_playlist['id'], tracks=cur)

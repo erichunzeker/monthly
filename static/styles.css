@@ -90,6 +90,11 @@ a:hover {
 
 .form-menu {
   margin: 5%;
+  padding-bottom: 5%;
+}
+
+.directions {
+  margin-left: 0;
 }
 
 .ignore-playlists {
@@ -133,10 +138,27 @@ input[type=checkbox] {
     display: none;
 }
 
-input:checked + label {
+input[type=radio] {
+    display: none;
+}
+
+input[type=checkbox]:checked + label {
   background-color: #dfe6e9;
   color: #b2bec3;
   text-decoration: line-through;
+}
+
+input[type=radio]:checked + label {
+  background-color: #33d9b2;
+  color: white;
+}
+
+.months {
+  display: none;
+}
+
+#single-month:checked ~ .months {
+  display: block;
 }
 
 .generate-button {

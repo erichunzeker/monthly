@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form class="form-menu" action="{{ url_for('register') }}" method="post">
+
+    <h1 class="directions">step 1: select any/all playlists that you would like to exclude</h1>
+    {%  for playlist in all_playlists %}
+        <div class="ignore-playlists">
+            <input id="{{ playlist['name'] }}" type="checkbox" name="checked" value="{{ playlist['name'] }}"/>
+            <label for="{{ playlist['name'] }}">{{ playlist['name'] }} - {{ playlist['tracks']['total']}} total tracks</label>
+            <br/>
+        </div>
+    {% endfor %}
+
+    <h1 class="directions">step 2: select what kind of aggregation you want</h1>
+    <div class="agg-type">
+            <input id="monthly" type="radio" name="agg_type" value="monthly" checked/>
+            <label for="monthly">monthly</label>
+            <input id="seasonal" type="radio" name="agg_type" value="seasonal"/>
+            <label for="seasonal">seasonal</label>
+            <input id="single-month" type="radio" name="agg_type" value="single-month"/>
+            <label for="single-month">single month</label>
+
+            <div class="months">
+                {%  for month in months %}
+                    <input id="{{ month }}" type="radio" name="single-month" value="{{ month }}"/>
+                    <label for="{{ month }}">{{ month }}</label>
+                {% endfor %}
+            </div>
+
+
+    </div>
+
+    <input class="generate-button" type="submit" value="generate playlists">
+</form>
+{% endblock %}
