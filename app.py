@@ -12,7 +12,7 @@ API_BASE = 'https://accounts.spotify.com'
 REDIRECT_URI = str(os.environ.get('SPOTIPY_REDIRECT_URI')) + "api_callback"
 CLI_ID = os.environ.get('SPOTIPY_CLIENT_ID')
 CLI_SEC = os.environ.get('SPOTIPY_CLIENT_SECRET')
-SCOPE = 'playlist-modify-public,playlist-modify-private,playlist-read-private'
+SCOPE = 'playlist-modify-public,playlist-modify-private,playlist-read-private,user-library-read'
 SHOW_DIALOG = True
 
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -31,6 +31,21 @@ def show_tracks(tracks, track_dict):
 			else:
 				if d < track_dict[uri]:
 					track_dict[uri] = d
+
+
+def add_liked_tracks(results, track_dict):
+	for item in results['items']:
+		track = item['track']
+		added = item['added_at'].split('T')[0]
+		uri = track['uri']
+		d = datetime.datetime.strptime(added, "%Y-%m-%d")
+		if 'local' not in uri:
+			if uri not in track_dict:
+				track_dict[uri] = d
+			else:
+				if d < track_dict[uri]:
+					track_dict[uri] = d
+
 
 
 @app.route('/')
@@ -82,6 +97,7 @@ def register():
 	error = None
 	if request.method == 'POST':
 		menu_request = request.form.to_dict(flat=False)
+		saved_tracks = False
 		if menu_request and 'checked' in menu_request:
 			ignore = menu_request['checked']
 		else:
@@ -92,8 +108,18 @@ def register():
 			agg_type = 'monthly'
 		if menu_request and agg_type == 'single-month' and 'single-month' in menu_request:
 			agg_type = menu_request['single-month'][0]
+		elif menu_request and agg_type == 'single-month':
+			month = datetime.datetime.today().month
+			agg_type = months[month - 1]
 
-		results = parse_playlists(agg_type, ignore, token=session['token'])
+		if menu_request and 'saved' in menu_request:
+			saved_tracks = menu_request['saved'][0]
+			if saved_tracks == 'yes':
+				saved_tracks = True
+			else:
+				saved_tracks = False
+
+		results = parse_playlists(agg_type, ignore, saved_tracks, token=session['token'])
 		return render_template('complete.html', playlists=results)
 	return render_template('complete.html', error=error)
 
@@ -118,7 +144,7 @@ def get_all_playlists(token):
 	return all_playlists
 
 
-def parse_playlists(agg_type, ignore_option, token):
+def parse_playlists(agg_type, ignore_option, saved_tracks, token):
 	if token:
 		sp = spotipy.Spotify(auth=token)
 		res = sp.current_user()
@@ -135,6 +161,13 @@ def parse_playlists(agg_type, ignore_option, token):
 				while tracks['next']:
 					tracks = sp.next(tracks)
 					show_tracks(tracks, track_dict)
+
+		if saved_tracks:
+			results = sp.current_user_saved_tracks()
+			add_liked_tracks(results, track_dict)
+			while results['next']:
+				results = sp.next(results)
+				add_liked_tracks(results, track_dict)
 
 		monthly = [[], [], [], [], [], [], [], [], [], [], [], []]
 		seasonal = [[], [], [], []]

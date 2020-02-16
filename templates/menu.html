@@ -27,9 +27,15 @@
                         <label for="{{ month }}">{{ month }}</label>
                     {% endfor %}
                 </div>
-
-
         </div>
+
+        <h1 class="directions">step 3: do you want to include liked tracks from your library in aggregation?</h1>
+            <div>
+                    <input id="saved-yes" type="radio" name="saved" value="yes" />
+                    <label for="saved-yes">yes</label>
+                    <input id="saved-no" type="radio" name="saved" value="no" checked/>
+                    <label for="saved-no">no</label>
+            </div>
 
         <input class="generate-button" type="submit" value="generate playlists">
     </form>

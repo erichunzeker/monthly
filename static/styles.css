@@ -183,4 +183,17 @@ input[type=radio]:checked + label {
   transition: 1.0s;
 }
 
+#playlist-label {
+  margin-left: 5%;
+  margin-top: 5%;
+  margin-bottom: 2%;
+}
 
+#playlist-embed {
+  margin-left: 5%;
+}
+
+#new-playlist-container {
+  margin-right: 5%;
+  display: inline-block;
+}

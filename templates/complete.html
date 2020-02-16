@@ -1,10 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
     <body>
+    <h1>here are your new playlists:</h1>
     {% for playlist in playlists %}
-        <a href="{{ playlist['external_urls']['spotify'] }}">{{ playlist['name'] }}</a>
-        <br/>
-        <br/>
+        <div id="new-playlist-container">
+            <h3 id="playlist-label"><a href="{{ playlist['external_urls']['spotify'] }}">{{ playlist['name'] }}</a></h3>
+            <iframe src="https://open.spotify.com/embed/playlist/{{ playlist['id'] }}" id="playlist-embed" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+        </div>
     {%  endfor %}
+
     </body>
 {% endblock %}
