@@ -180,8 +180,7 @@ def parse_playlists(agg_type, ignore_option, token):
 			ref = single_month
 
 		for x in range(num_playlists):
-			new_playlist = sp.user_playlist_create(user=username, name=f'{lookup[x]} Tunes', public=True,
-												   description=f'This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of {lookup[x]}')
+			new_playlist = sp.user_playlist_create(user=username, name=f'{lookup[x]} Tunes', public=True, description=f'This is an automatically generated playlist that includes all songs added to any one of my playlists in the month of {lookup[x]}')
 			for i in range(0, math.ceil(len(ref[x]) / 100)):
 				cur = ref[x]
 				cur = cur[(i * 100):((i * 100) + 99)]
