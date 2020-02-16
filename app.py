@@ -53,7 +53,6 @@ def apple():
 
 @app.route('/api_callback')
 def api_callback():
-	session.clear()
 	code = request.args.get('code')
 
 	auth_token_url = f"{API_BASE}/api/token"
