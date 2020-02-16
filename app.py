@@ -20,7 +20,7 @@ seasons = ['spring', 'summer', 'autumn', 'winter']
 
 
 def show_tracks(tracks, track_dict):
-	for i, item in enumerate(tracks['items']):
+	for item in tracks['items']:
 		track = item['track']
 		added = item['added_at'].split('T')[0]
 		uri = track['uri']
@@ -31,21 +31,6 @@ def show_tracks(tracks, track_dict):
 			else:
 				if d < track_dict[uri]:
 					track_dict[uri] = d
-
-
-def add_liked_tracks(results, track_dict):
-	for item in results['items']:
-		track = item['track']
-		added = item['added_at'].split('T')[0]
-		uri = track['uri']
-		d = datetime.datetime.strptime(added, "%Y-%m-%d")
-		if 'local' not in uri:
-			if uri not in track_dict:
-				track_dict[uri] = d
-			else:
-				if d < track_dict[uri]:
-					track_dict[uri] = d
-
 
 
 @app.route('/')
@@ -57,11 +42,6 @@ def index():
 def login():
 	auth_url = f'{API_BASE}/authorize?client_id={CLI_ID}&response_type=code&redirect_uri={REDIRECT_URI}&scope={SCOPE}&show_dialog={SHOW_DIALOG}'
 	return redirect(auth_url)
-
-
-@app.route('/apple/')
-def apple():
-	return render_template("apple.html")
 
 
 @app.route('/api_callback')
@@ -163,11 +143,12 @@ def parse_playlists(agg_type, ignore_option, saved_tracks, token):
 					show_tracks(tracks, track_dict)
 
 		if saved_tracks:
+			print('here')
 			results = sp.current_user_saved_tracks()
-			add_liked_tracks(results, track_dict)
+			show_tracks(results, track_dict)
 			while results['next']:
 				results = sp.next(results)
-				add_liked_tracks(results, track_dict)
+				show_tracks(results, track_dict)
 
 		monthly = [[], [], [], [], [], [], [], [], [], [], [], []]
 		seasonal = [[], [], [], []]
@@ -176,7 +157,6 @@ def parse_playlists(agg_type, ignore_option, saved_tracks, token):
 		for item in track_dict:
 			track_date = track_dict[item]
 			track_month = track_date.month
-			track_day = track_date.day
 
 			if agg_type == 'monthly':
 				monthly[track_month - 1].append(item)
