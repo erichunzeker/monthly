@@ -143,7 +143,6 @@ def parse_playlists(agg_type, ignore_option, saved_tracks, token):
 					show_tracks(tracks, track_dict)
 
 		if saved_tracks:
-			print('here')
 			results = sp.current_user_saved_tracks()
 			show_tracks(results, track_dict)
 			while results['next']:
